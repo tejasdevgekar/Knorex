@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-store-app
+spec:
+  replicas: 2
+  selector:
+      matchLabels:
+          app: data-store
+  template:
+    metadata:
+      name: data-store-app
+      labels:
+        app: data-store
+    spec:
+      containers:
+      - name: backend
+        image: tejasdevgekar/knorexapi:latest #use tejasdevgekar/test2:latest to avoid use of private registry 
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        # kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+        readinessProbe:
+          httpGet:
+            path: /get 
+            port: 5000 
+        ports:
+        - name: backend
+          containerPort: 5000
+      imagePullSecrets:
+      - name: regcred
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: data-store-svc
+spec:
+  type: LoadBalancer 
+  ports:
+  - name: http
+    port: 80
+    targetPort: 5000
+    protocol: TCP
+  selector:
+    app: data-store
+---
+#this ingress has same functionality as loadbalncer type service.
+#if to be deployed with nginx ingress controller can use - kubectl create ingress --class=nginx --rule=/=svc:port --annotation ingress.annotation1=foo
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#     name: test-ingress
+# spec:
+#     defaultBackend:
+#       service:
+#         name: data-store-svc
+#         port:
+#           number: 80
