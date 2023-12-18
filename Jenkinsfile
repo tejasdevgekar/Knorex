@@ -9,9 +9,9 @@ pipeline {
         }
         stage("Pull SCM"){
             steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'githubPass', url: 'https://github.com/tejasdevgekar/kronex']])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'githubPass', url: 'https://github.com/tejasdevgekar/knorex']])
                 script {
-                    def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[credentialsId: 'githubPass', url: 'https://github.com/tejasdevgekar/kronex']]])
+                    def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[credentialsId: 'githubPass', url: 'https://github.com/tejasdevgekar/knorex']]])
                     env.GIT_COMMIT = scmVars.GIT_COMMIT
                     env.SHORT_COMMIT = "${GIT_COMMIT[0..6]}"
                 }
